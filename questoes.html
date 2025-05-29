@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questões Geradas - Cebraspe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: var(--container-bg);
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            text-decoration: none;
+            display: inline-flex; /* Use inline-flex for better alignment with icon */
+            align-items: center;
+            justify-content: center;
+            border: 1px solid transparent; /* Default border */
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--primary-text);
+            border-color: var(--primary-color);
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: var(--secondary-text);
+            border-color: var(--secondary-color);
+        }
+        .btn-secondary:hover {
+            background-color: var(--secondary-hover);
+            border-color: var(--secondary-hover);
+        }
+        .question-item {
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+            background-color: var(--input-bg); /* Consistent with input styling */
+        }
+        .question-item h3 {
+            color: var(--primary-color); /* Use primary color for question title */
+            margin-bottom: 0.75rem;
+            font-size: 1.125rem; /* Slightly larger title */
+        }
+        .question-item p, .question-item li {
+            color: var(--input-text);
+            line-height: 1.6;
+        }
+        .gabarito-certo {
+            color: var(--success-bg); /* Use success color for correct */
+            font-weight: 600;
+        }
+        .gabarito-errado {
+            color: var(--error-bg); /* Use error color for incorrect */
+            font-weight: 600;
+        }
+        .gabarito-multipla {
+            color: var(--primary-color); /* Use primary color for MC answer */
+            font-weight: 600;
+        }
+
+        /* Paletas de Cores Base (Root) - Padrão Azul */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-text: white;
+            --secondary-color: #4b5563;
+            --secondary-hover: #374151;
+            --secondary-text: white;
+            --bg-color: #f3f4f6;
+            --text-color: #374151;
+            --container-bg: white;
+            --border-color: #d1d5db;
+            --input-bg: #f9fafb;
+            --input-text: #374151;
+            --focus-color: #2563eb; /* Not used on this page directly, but good for consistency */
+            --focus-shadow: rgba(59, 130, 246, 0.3);
+            --error-bg: #ef4444;
+            --error-text: white;
+            --success-bg: #10b981;
+            --success-text: white;
+            /* --selected-option-border is not needed here */
+        }
+
+        /* Paleta Padrão (Azul - explícita para reset) */
+        .palette-default {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-text: white;
+            --secondary-color: #4b5563;
+            --secondary-hover: #374151;
+            --secondary-text: white;
+            --bg-color: #f3f4f6;
+            --text-color: #374151;
+            --container-bg: white;
+            --border-color: #d1d5db;
+            --input-bg: #f9fafb;
+            --input-text: #374151;
+        }
+
+        /* Paleta Verde */
+        .palette-1 {
+            --primary-color: #10b981;
+            --primary-hover: #0b815a;
+            --primary-text: white;
+            --secondary-color: #4ade80;
+            --secondary-hover: #22c55e;
+            --secondary-text: #064e3b;
+            --bg-color: #f0fdf4;
+            --text-color: #1f2937;
+            --container-bg: #ffffff;
+            --border-color: #bbf7d0;
+            --input-bg: #dcfce7;
+            --input-text: #14532d;
+            --success-bg: #10b981; /* Already green */
+            --error-bg: #f87171; /* Lighter red on green bg for better contrast if needed */
+        }
+
+        /* Paleta Roxa */
+        .palette-2 {
+            --primary-color: #a855f7;
+            --primary-hover: #8c3dcd;
+            --primary-text: white;
+            --secondary-color: #c084fc;
+            --secondary-hover: #a855f7;
+            --secondary-text: #4c1d95;
+            --bg-color: #faf5ff;
+            --text-color: #1f2937;
+            --container-bg: #ffffff;
+            --border-color: #e9d5ff;
+            --input-bg: #f3e8ff;
+            --input-text: #581c87;
+        }
+
+        /* Modo Escuro (Padrão) */
+        .dark-mode {
+            --primary-color: #60a5fa;
+            --primary-hover: #3b82f6;
+            --primary-text: #1e293b;
+            --secondary-color: #9ca3af;
+            --secondary-hover: #6b7280;
+            --secondary-text: #111827;
+            --bg-color: #111827;
+            --text-color: #d1d5db;
+            --container-bg: #1f2937;
+            --border-color: #374151;
+            --input-bg: #374151;
+            --input-text: #d1d5db;
+            --success-bg: #4ade80; /* Brighter green for dark mode */
+            --error-bg: #f87171; /* Brighter red for dark mode */
+        }
+
+        /* Sua Nova Paleta Personalizada (Escura com Azul) */
+        .palette-user-dark-blue {
+            --primary-color: #2D8DFF;
+            --primary-hover: #4CAEFF;
+            --primary-text: #FFFFFF;
+            --secondary-color: #5A5A5A;
+            --secondary-hover: #707070;
+            --secondary-text: #FFFFFF;
+            --bg-color: #1A1A1A;
+            --text-color: #BFBFBF;
+            --container-bg: #2C2C2C;
+            --border-color: #3F3F3F;
+            --input-bg: #3F3F3F;
+            --input-text: #A8A8A8;
+            --error-bg: #D32F2F; /* Mantendo o vermelho padrão para destaque */
+            --error-text: #FFFFFF;
+            --success-bg: #4CAF50; /* Um verde que contraste bem com o fundo escuro */
+            --success-text: #FFFFFF;
+        }
+        .message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--error-bg);
+            color: var(--error-text);
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: none; /* Hidden by default */
+            font-size: 0.875rem;
+        }
+        .message-box.success {
+            background-color: var(--success-bg);
+            color: var(--success-text);
+        }
+
+    </style>
+</head>
+<body class="palette-default"> <div class="container">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold">Questões Geradas</h1>
+        </header>
+
+        <div id="messageBox" class="message-box"></div>
+
+        <section id="output-section">
+            <div id="questionsOutput" class="space-y-6">
+                <p class="italic text-center">Carregando questões...</p>
+            </div>
+            <div class="mt-8 flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
+                <button id="copyButton" class="w-full sm:w-auto btn btn-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                      <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                    </svg>
+                    Copiar Questões
+                </button>
+                <a href="index.html" class="w-full sm:w-auto btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor" transform="rotate(270)">
+                         <path fill-rule="evenodd" d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    Gerar Novas Questões
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <script type="module">
+        const questionsOutput = document.getElementById('questionsOutput');
+        const copyButton = document.getElementById('copyButton');
+        const body = document.body;
+        const messageBox = document.getElementById('messageBox');
+
+        function showMessage(text, type = 'error') {
+            messageBox.textContent = text;
+            messageBox.className = `message-box ${type}`;
+            messageBox.style.display = 'block';
+            setTimeout(() => {
+                messageBox.style.display = 'none';
+            }, 3000);
+        }
+
+        // Aplicar paleta de cores salva
+        const savedPalette = localStorage.getItem('colorPalette') || 'palette-default';
+        body.className = ''; // Limpa classes antigas do body
+        body.classList.add(savedPalette);
+
+
+        function displayQuestions(questionsData) {
+            questionsOutput.innerHTML = '';
+            if (!questionsData || !questionsData.questions || questionsData.questions.length === 0) {
+                questionsOutput.innerHTML = '<p class="italic text-center">Nenhuma questão foi encontrada. Tente gerar novamente.</p>';
+                copyButton.style.display = 'none';
+                return;
+            }
+
+            const { questions, type } = questionsData;
+
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question-item');
+                
+                let content = `<h3 class="font-semibold mb-2">Questão ${index + 1}</h3>`;
+
+                if (type === 'certo_errado') {
+                    content += `<p class="mb-1"><strong class="font-medium">Afirmação:</strong> ${q.afirmacao || 'Afirmação não fornecida'}</p>`;
+                    content += `<p><strong class="font-medium">Gabarito:</strong> <span class="${q.gabarito === 'Certo' ? 'gabarito-certo' : 'gabarito-errado'}">${q.gabarito || 'Gabarito não fornecido'}</span></p>`;
+                } else { // multipla_escolha
+                    content += `<p class="mb-2"><strong class="font-medium">Enunciado:</strong> ${q.enunciado || 'Enunciado não fornecido'}</p>`;
+                    if (q.alternativas) {
+                        content += `<ul class="list-none space-y-1 pl-1 mb-2">`;
+                        for (const key in q.alternativas) {
+                            content += `<li><strong class="font-medium">${key})</strong> ${q.alternativas[key]}</li>`;
+                        }
+                        content += `</ul>`;
+                    } else {
+                         content += `<p class="text-red-500 italic">Alternativas não fornecidas.</p>`;
+                    }
+                    content += `<p><strong class="font-medium">Gabarito:</strong> <span class="gabarito-multipla">${q.gabarito || 'Gabarito não fornecido'}</span></p>`;
+                }
+                questionDiv.innerHTML = content;
+                questionsOutput.appendChild(questionDiv);
+            });
+            copyButton.style.display = 'inline-flex'; // Mostrar botão de copiar
+        }
+
+        const storedQuestionsData = localStorage.getItem('generatedQuestions');
+        if (storedQuestionsData) {
+            try {
+                const parsedData = JSON.parse(storedQuestionsData);
+                displayQuestions(parsedData);
+            } catch (e) {
+                console.error("Erro ao carregar questões do localStorage:", e);
+                questionsOutput.innerHTML = '<p class="text-red-500 italic text-center">Erro ao carregar as questões.</p>';
+                copyButton.style.display = 'none';
+            }
+        } else {
+            questionsOutput.innerHTML = '<p class="italic text-center">Nenhuma questão para exibir. Volte e gere novas questões.</p>';
+            copyButton.style.display = 'none';
+        }
+
+        copyButton.addEventListener('click', () => {
+            let textToCopy = '';
+            const questionItems = questionsOutput.querySelectorAll('.question-item');
+            const storedData = JSON.parse(localStorage.getItem('generatedQuestions')); // Re-parse para pegar o tipo
+            const questionType = storedData ? storedData.type : 'certo_errado'; // Fallback
+            
+            questionItems.forEach((item) => { // Removido index não utilizado
+                const questionNumberText = item.querySelector('h3').textContent;
+                textToCopy += `${questionNumberText}\n`;
+
+                if (questionType === 'certo_errado') {
+                    // Ajuste para pegar o texto corretamente, evitando pegar o strong "Afirmação:"
+                    const afirmacaoElement = item.querySelector('p:nth-of-type(1)');
+                    const afirmacaoText = afirmacaoElement ? afirmacaoElement.innerHTML.replace(/<strong[^>]*>.*?<\/strong>\s*/i, '').trim() : 'Afirmação não fornecida';
+                    
+                    const gabaritoElement = item.querySelector('p:nth-of-type(2) span');
+                    const gabaritoText = gabaritoElement ? gabaritoElement.textContent.trim() : 'Gabarito não fornecido';
+                    
+                    textToCopy += `${afirmacaoText}\nGabarito: ${gabaritoText}\n\n`;
+                } else { // multipla_escolha
+                    const enunciadoElement = item.querySelector('p:nth-of-type(1)');
+                    const enunciadoText = enunciadoElement ? enunciadoElement.innerHTML.replace(/<strong[^>]*>.*?<\/strong>\s*/i, '').trim() : 'Enunciado não fornecido';
+                    textToCopy += `${enunciadoText}\n`;
+
+                    const alternativas = item.querySelectorAll('ul li');
+                    alternativas.forEach(alt => {
+                        textToCopy += `${alt.textContent.trim()}\n`;
+                    });
+                    const gabaritoElement = item.querySelector('p:last-of-type span');
+                    const gabaritoText = gabaritoElement ? gabaritoElement.textContent.trim() : 'Gabarito não fornecido';
+                    textToCopy += `Gabarito: ${gabaritoText}\n\n`;
+                }
+            });
+
+            const textArea = document.createElement("textarea");
+            textArea.value = textToCopy.trim();
+            textArea.style.position = 'fixed'; // Evita scroll da página
+            textArea.style.left = '-9999px';
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showMessage('Questões copiadas para a área de transferência!', 'success');
+            } catch (err) {
+                showMessage('Erro ao copiar. Tente manualmente.', 'error');
+                console.error('Erro ao copiar texto: ', err);
+            }
+            document.body.removeChild(textArea);
+        });
+
+    </script>
+</body>
+</html>

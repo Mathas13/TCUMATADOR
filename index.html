@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Questões Estilo Cebraspe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: var(--container-bg);
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--primary-text);
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+        .form-control {
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+            padding: 0.75rem;
+            width: 100%;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background-color: var(--input-bg);
+            color: var(--input-text);
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--focus-color);
+            box-shadow: 0 0 0 3px var(--focus-shadow);
+        }
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s ease-in-out;
+        }
+        .color-option.selected {
+            border-color: #000; /* Uma cor de destaque para a seleção, pode ser ajustada pela paleta se quiser */
+        }
+        .loader {
+            border: 4px solid var(--loader-bg);
+            border-top: 4px solid var(--loader-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--error-bg);
+            color: var(--error-text);
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: none;
+            font-size: 0.875rem;
+        }
+        .message-box.success {
+            background-color: var(--success-bg);
+            color: var(--success-text);
+        }
+        /* Paletas de Cores */
+        :root {
+            --primary-color: #2563eb; /* Azul Padrão */
+            --primary-hover: #1d4ed8;
+            --primary-text: white;
+            --secondary-color: #4b5563;
+            --secondary-hover: #374151;
+            --secondary-text: white;
+            --bg-color: #f3f4f6;
+            --text-color: #374151;
+            --container-bg: white;
+            --border-color: #d1d5db;
+            --input-bg: #f9fafb;
+            --input-text: #374151;
+            --focus-color: #2563eb;
+            --focus-shadow: rgba(59, 130, 246, 0.3);
+            --loader-bg: #f3f3f3;
+            --loader-color: #2563eb;
+            --error-bg: #ef4444;
+            --error-text: white;
+            --success-bg: #10b981;
+            --success-text: white;
+            --selected-option-border: #000000; /* Preto para borda de seleção padrão */
+        }
+
+        .palette-default { /* Adicionado para resetar ao padrão explícito */
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --focus-color: #2563eb;
+            --loader-color: #2563eb;
+            --bg-color: #f3f4f6;
+            --text-color: #374151;
+            --container-bg: white;
+            --border-color: #d1d5db;
+            --input-bg: #f9fafb;
+            --input-text: #374151;
+            --selected-option-border: #000000;
+        }
+
+        .palette-1 { /* Verde */
+            --primary-color: #10b981;
+            --primary-hover: #0b815a;
+            --focus-color: #10b981;
+            --loader-color: #10b981;
+            /* Mantém outras cores do tema claro ou ajusta se necessário */
+            --bg-color: #f0fdf4; /* Fundo levemente esverdeado */
+            --text-color: #1f2937;
+            --container-bg: #ffffff;
+            --border-color: #bbf7d0;
+            --input-bg: #f0fdf4;
+            --input-text: #1f2937;
+            --selected-option-border: #065f46; /* Verde escuro para borda */
+        }
+
+        .palette-2 { /* Roxo */
+            --primary-color: #a855f7;
+            --primary-hover: #8c3dcd;
+            --focus-color: #a855f7;
+            --loader-color: #a855f7;
+            /* Mantém outras cores do tema claro ou ajusta se necessário */
+            --bg-color: #faf5ff; /* Fundo levemente roxo */
+            --text-color: #1f2937;
+            --container-bg: #ffffff;
+            --border-color: #e9d5ff;
+            --input-bg: #faf5ff;
+            --input-text: #1f2937;
+            --selected-option-border: #5b21b6; /* Roxo escuro para borda */
+        }
+
+        .dark-mode { /* Modo Escuro */
+            --primary-color: #60a5fa; /* Azul mais claro para contraste */
+            --primary-hover: #3b82f6;
+            --primary-text: #1e293b; /* Texto escuro no botão primário */
+            --secondary-color: #6b7280;
+            --secondary-hover: #4b5563;
+            --secondary-text: #f3f4f6;
+            --bg-color: #1e293b; /* Azul ardósia escuro */
+            --text-color: #f3f4f6; /* Cinza claro */
+            --container-bg: #334155; /* Azul ardósia médio */
+            --border-color: #475569; /* Azul ardósia claro */
+            --input-bg: #475569;
+            --input-text: #f3f4f6;
+            --focus-color: #60a5fa;
+            --focus-shadow: rgba(96, 165, 250, 0.4);
+            --loader-color: #60a5fa;
+            --loader-bg: #475569;
+            --selected-option-border: #ffffff; /* Branco para borda de seleção */
+        }
+        .color-option.selected {
+            border-color: var(--selected-option-border);
+        }
+    </style>
+</head>
+<body class="palette-default"> <div class="container">
+        <header class="text-center mb-8">
+            <div class="flex justify-center mb-4">
+                 <img src="sua-logo.png" alt="Sua Logo" class="h-12" onerror="this.style.display='none'; this.onerror=null;">
+            </div>
+            <h1 class="text-3xl font-bold">Gerador de Questões Estilo Cebraspe</h1>
+            <p class="mt-2">Insira seu texto base e crie questões de forma automática.</p>
+        </header>
+
+        <div id="messageBox" class="message-box"></div>
+
+        <section class="mb-6">
+            <h2 class="text-xl font-semibold mb-2">Escolha a Paleta de Cores:</h2>
+            <div class="flex space-x-3 items-center">
+                <div class="color-option bg-blue-600" data-palette="palette-default" title="Padrão (Azul)"></div>
+                <div class="color-option bg-emerald-500" data-palette="palette-1" title="Verde"></div>
+                <div class="color-option bg-purple-500" data-palette="palette-2" title="Roxo"></div>
+                <div class="color-option bg-gray-700 border-2 border-gray-300" data-palette="dark-mode" title="Modo Escuro"></div>
+            </div>
+        </section>
+
+        <section id="input-section" class="space-y-6">
+            <div>
+                <label for="baseText" class="block text-sm font-medium mb-1">Cole aqui o texto base:</label>
+                <textarea id="baseText" rows="10" class="form-control" placeholder="Insira o texto que servirá de base para as questões..."></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="questionType" class="block text-sm font-medium mb-1">Tipo de Questão:</label>
+                    <select id="questionType" class="form-control">
+                        <option value="certo_errado">Certo / Errado</option>
+                        <option value="multipla_escolha">Múltipla Escolha (4 alternativas)</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="numQuestions" class="block text-sm font-medium mb-1">Número de Questões:</label>
+                    <input type="number" id="numQuestions" value="3" min="1" max="10" class="form-control">
+                </div>
+            </div>
+
+            <button id="generateButton" class="w-full btn btn-primary flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                </svg>
+                Gerar Questões
+            </button>
+        </section>
+
+        <div id="loader" class="loader" style="display: none;"></div>
+    </div>
+
+    <script type="module">
+        const baseTextInput = document.getElementById('baseText');
+        const questionTypeSelect = document.getElementById('questionType');
+        const numQuestionsInput = document.getElementById('numQuestions');
+        const generateButton = document.getElementById('generateButton');
+        const loader = document.getElementById('loader');
+        const messageBox = document.getElementById('messageBox');
+        const colorOptions = document.querySelectorAll('.color-option');
+        const body = document.body;
+
+        const apiKey = ""; // Deixe em branco, será gerenciada pelo ambiente
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+        function applyPalette(paletteName) {
+            body.className = ''; // Remove todas as classes de paleta anteriores
+            body.classList.add(paletteName); // Adiciona a nova classe de paleta
+            localStorage.setItem('colorPalette', paletteName); // Salva a paleta
+            colorOptions.forEach(opt => opt.classList.remove('selected'));
+            const currentOption = document.querySelector(`.color-option[data-palette="${paletteName}"]`);
+            if (currentOption) {
+                currentOption.classList.add('selected');
+            }
+        }
+        
+        // Carregar paleta de cores salva (se houver)
+        const savedPalette = localStorage.getItem('colorPalette') || 'palette-default'; // Padrão para 'palette-default'
+        applyPalette(savedPalette);
+
+
+        // Event listeners para mudar a paleta de cores
+        colorOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const paletteToApply = this.dataset.palette;
+                applyPalette(paletteToApply);
+            });
+        });
+
+        function showMessage(text, type = 'error') {
+            messageBox.textContent = text;
+            messageBox.className = `message-box ${type}`;
+            messageBox.style.display = 'block';
+            setTimeout(() => {
+                messageBox.style.display = 'none';
+            }, 5000);
+        }
+
+        function getPromptAndSchema(baseText, questionType, numQuestions) {
+            let prompt;
+            let schema;
+
+            if (questionType === 'certo_errado') {
+                prompt = `
+Com base EXCLUSIVAMENTE no texto fornecido abaixo, gere ${numQuestions} afirmações distintas no estilo Cebraspe (Certo/Errado).
+Para cada afirmação, indique se ela é CERTA ou ERRADA de acordo com o texto.
+Não adicione informações, interpretações ou conclusões que não estejam explicitamente contidas ou diretamente inferíveis do texto.
+As afirmações devem ser concisas e focar em aspectos específicos do texto. Evite ambiguidades.
+As afirmações do tipo "ERRADO" devem ser plausivelmente falsas, não absurdamente falsas.
+
+Formato da resposta esperado: JSON array de objetos, onde cada objeto tem as chaves "afirmacao" (string) e "gabarito" (string: "Certo" ou "Errado").
+
+Texto:
+"""
+${baseText}
+"""
+`;
+                schema = {
+                    type: "ARRAY",
+                    items: {
+                        type: "OBJECT",
+                        properties: {
+                            "afirmacao": { "type": "STRING", "description": "A afirmação gerada." },
+                            "gabarito": { "type": "STRING", "description": "Se a afirmação é 'Certo' ou 'Errado', baseado estritamente no texto." }
+                        },
+                        required: ["afirmacao", "gabarito"]
+                    }
+                };
+            } else { // multipla_escolha
+                prompt = `
+Com base EXCLUSIVAMENTE no texto fornecido abaixo, gere ${numQuestions} questões de múltipla escolha distintas no estilo Cebraspe, cada uma com quatro alternativas (A, B, C, D).
+Cada questão deve ter um enunciado claro, uma alternativa correta e três alternativas incorretas (distratores).
+O enunciado e todas as alternativas devem ser formulados estritamente a partir das informações presentes no texto. Não introduza conhecimento externo.
+Os distratores devem ser plausíveis mas inequivocamente errados de acordo com o texto. Não crie distratores que sejam parcialmente corretos ou que exijam conhecimento não presente no texto para serem invalidados.
+A alternativa correta deve ser inequivocamente correta com base no texto.
+Indique a alternativa correta.
+
+Formato da resposta esperado: JSON array de objetos, onde cada objeto tem as chaves "enunciado" (string), "alternativas" (objeto com chaves "A", "B", "C", "D", todas strings), e "gabarito" (string: "A", "B", "C", ou "D").
+
+Texto:
+"""
+${baseText}
+"""
+`;
+                schema = {
+                    type: "ARRAY",
+                    items: {
+                        type: "OBJECT",
+                        properties: {
+                            "enunciado": { "type": "STRING", "description": "O enunciado da questão." },
+                            "alternativas": {
+                                type: "OBJECT",
+                                properties: {
+                                    "A": { "type": "STRING", "description": "Alternativa A." },
+                                    "B": { "type": "STRING", "description": "Alternativa B." },
+                                    "C": { "type": "STRING", "description": "Alternativa C." },
+                                    "D": { "type": "STRING", "description": "Alternativa D." }
+                                },
+                                required: ["A", "B", "C", "D"]
+                            },
+                            "gabarito": { "type": "STRING", "description": "Letra da alternativa correta (A, B, C, ou D)." }
+                        },
+                        required: ["enunciado", "alternativas", "gabarito"]
+                    }
+                };
+            }
+            return { prompt, schema };
+        }
+
+        generateButton.addEventListener('click', async () => {
+            const baseText = baseTextInput.value.trim();
+            const questionType = questionTypeSelect.value;
+            const numQuestions = parseInt(numQuestionsInput.value);
+
+            if (!baseText) {
+                showMessage('Por favor, insira o texto base.');
+                return;
+            }
+            if (numQuestions < 1 || numQuestions > 10) {
+                showMessage('Por favor, insira um número de questões entre 1 e 10.');
+                return;
+            }
+
+            loader.style.display = 'block';
+            generateButton.disabled = true;
+            generateButton.classList.add('opacity-50', 'cursor-not-allowed');
+
+            try {
+                const { prompt, schema } = getPromptAndSchema(baseText, questionType, numQuestions);
+                const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory, generationConfig: { responseMimeType: "application/json", responseSchema: schema } };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('API Error Data:', errorData);
+                    throw new Error(`Erro da API: ${response.statusText}. Detalhes: ${errorData?.error?.message || 'Sem detalhes adicionais.'}`);
+                }
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0 && result.candidates[0].content.parts[0].text) {
+                    
+                    const jsonResponseText = result.candidates[0].content.parts[0].text;
+                    const generatedQuestions = JSON.parse(jsonResponseText);
+                    
+                    // Salva as questões e o tipo no localStorage para a outra página
+                    localStorage.setItem('generatedQuestions', JSON.stringify({ questions: generatedQuestions, type: questionType }));
+                    // Redireciona para a página de questões
+                    window.location.href = 'questoes.html';
+
+                } else {
+                    console.error('Resposta da API inesperada:', result);
+                    if (result.promptFeedback && result.promptFeedback.blockReason) {
+                         throw new Error(`Geração bloqueada pela API. Razão: ${result.promptFeedback.blockReason}. Detalhes: ${JSON.stringify(result.promptFeedback.safetyRatings)}`);
+                    } else {
+                        throw new Error('Não foi possível gerar as questões. Formato de resposta inesperado ou conteúdo bloqueado.');
+                    }
+                }
+
+            } catch (error) {
+                console.error('Erro ao gerar questões:', error);
+                showMessage(`Erro ao gerar questões: ${error.message}`);
+            } finally {
+                loader.style.display = 'none';
+                generateButton.disabled = false;
+                generateButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        });
+
+    </script>
+</body>
+</html>
